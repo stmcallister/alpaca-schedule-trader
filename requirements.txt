@@ -1,0 +1,4 @@
+pytz
+alpaca-py
+APScheduler
+PyYAML
