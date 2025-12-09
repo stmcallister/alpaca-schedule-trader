@@ -74,14 +74,14 @@ With that entry you can create and star the schedule knowing that the `TradeWork
 python start_schedule.py
 ```
 
-### Start Trade Worker
+### 4. Start Trade Worker
 Run the trade worker:
 
 ```bash
 python run_worker.py
 ```
 
-### 4. View Schedules
+### 5. View Schedules
 
 Check all registered schedules:
 
@@ -91,7 +91,7 @@ temporal schedule list
 
 Or, you can look at the schedules in the [Temporal Dashboard](http://localhost:8233/namespaces/default/schedules).
 
-### 5. Trigger a trade manually (optional)
+### 6. Trigger a trade manually (optional)
 You can let the schedule trigger a trade, or you can trigger a trade manually by running the following:
 
 ```bash
