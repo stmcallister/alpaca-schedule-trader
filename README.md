@@ -1,5 +1,8 @@
 # Alpaca Schedule Trader
 
+> *NOTE: This project requires access to an Alpaca account. If you need API keys and secrets to run the code in my sandbox account please contact me.*
+
+
 Alpaca Schedule Trader is an application that automates time‑based stock trades using the [Alpaca API](https://alpaca.markets/) and the **Temporal** workflow engine.
 
 ## What Problem Does This Solve?
