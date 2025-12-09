@@ -2,3 +2,4 @@ pytz
 alpaca-py
 APScheduler
 PyYAML
+temporalio
