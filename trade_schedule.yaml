@@ -1,21 +1,12 @@
 jobs:
-  - name: tester_mctest_sell
-    action: sell
-    ticker: SPY
-    quantity: 1
-    schedule:
-      day_of_week: "tue"
-      hour: 10
-      minute: 50
-
-  - name: tester_mctest_buy
+  - name: buy_pd_demo
     action: buy
-    ticker: SPY
-    quantity: 1
+    ticker: PD
+    quantity: 10
     schedule:
-      day_of_week: "tue"
-      hour: 10
-      minute: 47
+      day_of_week: "wed"
+      hour: 11
+      minute: 18
 
   - name: buy_tsla_942
     action: buy
