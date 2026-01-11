@@ -97,5 +97,3 @@ You can let the schedule trigger a trade, or you can trigger a trade manually by
 ```bash
 temporal workflow start   --task-queue TRADE_TASK_QUEUE   --type TradeWorkflow   --input '{"ticker": "TSLA", "action": "buy", "quantity": 10}'
 ```
-
-
