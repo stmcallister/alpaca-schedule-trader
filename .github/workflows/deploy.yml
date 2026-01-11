@@ -1,4 +1,4 @@
-name: e2e-demo
+name: alpaca-trader
 
 # Controls when the workflow will run
 on:
