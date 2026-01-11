@@ -1,13 +1,4 @@
 jobs:
-  - name: buy_pd_demo
-    action: buy
-    ticker: PD
-    quantity: 10
-    schedule:
-      day_of_week: "wed"
-      hour: 11
-      minute: 18
-
   - name: buy_tsla_942
     action: buy
     ticker: TSLA

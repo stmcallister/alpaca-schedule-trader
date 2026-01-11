@@ -9,7 +9,12 @@ from workflows import TradeWorkflow
 
 
 async def main() -> None:
-    client: Client = await Client.connect("localhost:7233", namespace="default")
+    import os
+    temporal_host = os.getenv("TEMPORAL_HOST", "localhost")
+    temporal_port = os.getenv("TEMPORAL_PORT", "7233")
+    temporal_namespace = os.getenv("TEMPORAL_NAMESPACE", "default")
+    temporal_address = f"{temporal_host}:{temporal_port}"
+    client: Client = await Client.connect(temporal_address, namespace=temporal_namespace)
     # Run the trade worker
     activities = TradingActivities()
     worker: Worker = Worker(
