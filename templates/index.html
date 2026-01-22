@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpaca Schedule Trader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .timezone-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .jobs-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+        
+        .job-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            transition: all 0.3s;
+        }
+        
+        .job-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .job-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .job-action {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .action-buy {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .action-sell {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 Alpaca Schedule Trader</h1>
+            <div class="timezone-info">Timezone: {{ timezone }}</div>
+        </div>
+        
+        <div class="jobs-container">
+            <div class="jobs-header">
+                <h2>Scheduled Jobs</h2>
+                <button class="btn btn-primary" onclick="openModal()">+ Add New Job</button>
+            </div>
+            
+            <div id="alert-container"></div>
+            
+            <div id="jobs-list">
+                {% for job in jobs %}
+                <div class="job-card" data-job-name="{{ job.name }}">
+                    <div class="job-header">
+                        <div class="job-name">{{ job.name }}</div>
+                        <span class="job-action action-{{ job.action }}">{{ job.action }}</span>
+                    </div>
+                    <div class="job-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Ticker</span>
+                            <span class="detail-value">{{ job.ticker }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Quantity</span>
+                            <span class="detail-value">{{ job.quantity }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Day of Week</span>
+                            <span class="detail-value">{{ job.schedule.day_of_week }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time</span>
+                            <span class="detail-value">{{ "%02d" % job.schedule.hour }}:{{ "%02d" % job.schedule.minute }}</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-edit" onclick="editJob('{{ job.name }}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteJob('{{ job.name }}')">Delete</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Add/Edit Job -->
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Job</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="jobForm">
+                <input type="hidden" id="job-name-original" name="original_name">
+                <div class="form-group">
+                    <label for="job-name">Job Name *</label>
+                    <input type="text" id="job-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="job-action">Action *</label>
+                    <select id="job-action" name="action" required>
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="job-ticker">Ticker Symbol *</label>
+                    <input type="text" id="job-ticker" name="ticker" required placeholder="e.g., TSLA, SPY">
+                </div>
+                <div class="form-group">
+                    <label for="job-quantity">Quantity *</label>
+                    <input type="number" id="job-quantity" name="quantity" required min="1">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="job-day">Day of Week *</label>
+                        <select id="job-day" name="day_of_week" required>
+                            <option value="mon-fri">Monday - Friday</option>
+                            <option value="mon">Monday</option>
+                            <option value="tue">Tuesday</option>
+                            <option value="wed">Wednesday</option>
+                            <option value="thu">Thursday</option>
+                            <option value="fri">Friday</option>
+                            <option value="sat">Saturday</option>
+                            <option value="sun">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="job-hour">Hour (24h) *</label>
+                        <input type="number" id="job-hour" name="hour" required min="0" max="23">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-minute">Minute *</label>
+                        <input type="number" id="job-minute" name="minute" required min="0" max="59">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" class="btn" onclick="closeModal()" style="flex: 1; background: #95a5a6; color: white;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let editingJobName = null;
+        
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+        
+        function openModal(jobName = null) {
+            editingJobName = jobName;
+            const modal = document.getElementById('jobModal');
+            const form = document.getElementById('jobForm');
+            const title = document.getElementById('modal-title');
+            
+            if (jobName) {
+                title.textContent = 'Edit Job';
+                // Load job data
+                fetch(`/api/jobs/${jobName}`)
+                    .then(res => res.json())
+                    .then(job => {
+                        document.getElementById('job-name').value = job.name;
+                        document.getElementById('job-name-original').value = job.name;
+                        document.getElementById('job-action').value = job.action;
+                        document.getElementById('job-ticker').value = job.ticker;
+                        document.getElementById('job-quantity').value = job.quantity;
+                        document.getElementById('job-day').value = job.schedule.day_of_week;
+                        document.getElementById('job-hour').value = job.schedule.hour;
+                        document.getElementById('job-minute').value = job.schedule.minute;
+                    });
+            } else {
+                title.textContent = 'Add New Job';
+                form.reset();
+                document.getElementById('job-name-original').value = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('jobModal').style.display = 'none';
+            editingJobName = null;
+        }
+        
+        function editJob(jobName) {
+            openModal(jobName);
+        }
+        
+        function deleteJob(jobName) {
+            if (!confirm(`Are you sure you want to delete "${jobName}"?`)) {
+                return;
+            }
+            
+            fetch(`/api/jobs/${jobName}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                showAlert(data.message || 'Job deleted successfully', 'success');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(err => {
+                showAlert('Error deleting job', 'error');
+            });
+        }
+        
+        document.getElementById('jobForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const jobData = {
+                name: formData.get('name'),
+                action: formData.get('action'),
+                ticker: formData.get('ticker').toUpperCase(),
+                quantity: parseInt(formData.get('quantity')),
+                schedule: {
+                    day_of_week: formData.get('day_of_week'),
+                    hour: parseInt(formData.get('hour')),
+                    minute: parseInt(formData.get('minute'))
+                }
+            };
+            
+            const originalName = formData.get('original_name');
+            const url = originalName ? `/api/jobs/${originalName}` : '/api/jobs';
+            const method = originalName ? 'PUT' : 'POST';
+            
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jobData)
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showAlert(originalName ? 'Job updated successfully' : 'Job created successfully', 'success');
+                    closeModal();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showAlert(data.error || 'Error saving job', 'error');
+                }
+            } catch (err) {
+                showAlert('Error saving job', 'error');
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('jobModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

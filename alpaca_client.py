@@ -10,10 +10,10 @@ if PAPER:
 else:
     BASE_TRADING_URL = "https://api.alpaca.markets"
 
-API_KEY = os.getenv("APCA_API_KEY_ID")
-API_SECRET = os.getenv("APCA_API_SECRET_KEY")
+API_KEY = os.getenv("ALPACA_API_KEY_ID")
+API_SECRET = os.getenv("ALPACA_API_SECRET_KEY")
 if not API_KEY or not API_SECRET:
-    raise SystemExit("Set APCA_API_KEY_ID and APCA_API_SECRET_KEY env vars.")
+    raise SystemExit("Set ALPACA_API_KEY_ID and ALPACA_API_SECRET_KEY env vars.")
 
 trading = TradingClient(API_KEY, API_SECRET, paper=PAPER)
 
