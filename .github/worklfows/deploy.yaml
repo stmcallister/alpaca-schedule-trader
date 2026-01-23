@@ -2,16 +2,10 @@ name: deploy-trader-schedule
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on pull request events but only for the "main" branch
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  # Run on pushes (including merges) to main
+  push:
     branches:
-      - temporalize
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+      - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
