@@ -58,8 +58,8 @@ jobs:
 
       - name: Configure and Deploy Cluster
         run: |
-          # Alter k8s.yaml to sed the version
-          sed -i'' -e 's/DOCKER_URL/${{ secrets.DOCKER_URL }}/g' -e 's/IMAGE_LABEL/${{ github.sha }}/g' -e config-repo/config/deployment.yaml
+          # Alter k8s/deployment.yaml to sed the version
+          sed -i'' -e 's/DOCKER_URL/${{ secrets.DOCKER_URL }}/g' -e 's/IMAGE_LABEL/${{ github.sha }}/g' config-repo/config/deployment.yaml
 
       - name: Configure Git
         run: |
