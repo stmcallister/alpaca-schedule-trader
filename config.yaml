@@ -1,25 +1,6 @@
 timezone: "America/Los_Angeles"
 
 jobs:
-  # - name: tester_mctest_buy
-  #   action: buy
-  #   ticker: SPY
-  #   quantity: 1
-  #   schedule:
-  #     day_of_week: "fri"
-  #     hour: 10
-  #     minute: 05
-
-  - name: tester_mctest_sell
-    action: sell
-    ticker: SPY
-    quantity: 1
-    schedule:
-      day_of_week: "fri"
-      hour: 10
-      minute: 08
-
-
   - name: buy_tsla_942
     action: buy
     ticker: TSLA
