@@ -41,12 +41,12 @@ jobs:
           set -x
 
           # Build schedule and worker images
-          docker build -t ${{ secrets.DOCKER_URL }}/alpaca-trader-schedule:${{ github.sha }} -f Dockerfile .
+          docker build -t ${{ secrets.DOCKER_URL }}/alpaca-schedule-trader:${{ github.sha }} -f Dockerfile .
 
       - name: Push Docker Images
         run: |
           # push docker images to dockerhub
-          docker push ${{ secrets.DOCKER_URL }}/alpaca-trader-schedule:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_URL }}/alpaca-schedule-trader:${{ github.sha }}
 
       - name: Checkout config manifests
         uses: actions/checkout@v3
