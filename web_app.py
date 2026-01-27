@@ -2,7 +2,15 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 import json
 import os
 from threading import Lock
-from scheduler import load_config, build_scheduler, schedule_job, get_scheduler_instance, set_scheduler_instance
+from scheduler import (
+    load_config,
+    build_scheduler,
+    schedule_job,
+    get_scheduler_instance,
+    set_scheduler_instance,
+    get_all_job_last_runs,
+    get_last_run_overall,
+)
 from pytz import timezone
 import yaml
 
@@ -59,10 +67,30 @@ def index():
                     job['schedule']['hour'] = int(job['schedule']['hour'])
                 if 'minute' in job['schedule']:
                     job['schedule']['minute'] = int(job['schedule']['minute'])
-        return render_template('index.html', jobs=jobs, timezone=config.get('timezone', 'America/Los_Angeles'))
+        job_runs = get_all_job_last_runs()
+        last_run_overall = get_last_run_overall()
+        return render_template(
+            'index.html',
+            jobs=jobs,
+            timezone=config.get('timezone', 'America/Los_Angeles'),
+            job_runs=job_runs,
+            last_run_overall=last_run_overall,
+        )
     except Exception as e:
         app.logger.error(f"Error in index route: {e}")
         return f"Error loading page: {str(e)}", 500
+
+@app.route('/api/job-runs', methods=['GET'])
+def get_job_runs():
+    """Get last run status/result per job"""
+    try:
+        return jsonify({
+            "jobs": get_all_job_last_runs(),
+            "last_run_overall": get_last_run_overall(),
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting job run status: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():

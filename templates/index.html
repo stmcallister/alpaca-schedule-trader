@@ -47,6 +47,67 @@
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
+
+        .status-panel {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f6f8ff;
+            border: 1px solid #e3e7ff;
+            color: #333;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .status-row {
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 110px;
+        }
+
+        .status-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pill-never { background: #ecf0f1; color: #2c3e50; }
+        .pill-running { background: #fff3cd; color: #856404; }
+        .pill-success { background: #d4edda; color: #155724; }
+        .pill-error { background: #f8d7da; color: #721c24; }
+
+        .status-result {
+            font-size: 13px;
+            color: #444;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 10px;
+        }
         
         .jobs-header {
             display: flex;
@@ -260,6 +321,58 @@
         <div class="header">
             <h1>📈 Alpaca Schedule Trader</h1>
             <div class="timezone-info">Timezone: {{ timezone }}</div>
+
+            <div class="status-panel" id="overall-status">
+                <div class="status-row">
+                    <div class="status-label">Last job run</div>
+                    <div class="status-value" id="overall-last-run">
+                        {% if last_run_overall and last_run_overall.finished_at %}
+                            {{ last_run_overall.finished_at }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">Status</div>
+                    <div class="status-value">
+                        {% if last_run_overall and last_run_overall.status %}
+                            <span class="status-pill pill-{{ last_run_overall.status }}">{{ last_run_overall.status }}</span>
+                        {% else %}
+                            <span class="status-pill pill-never">never</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">Message</div>
+                    <div class="status-value" id="overall-message">
+                        {% if last_run_overall and last_run_overall.message %}
+                            {{ last_run_overall.message }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-panel" id="alpaca-account-panel">
+                <div class="status-row">
+                    <div class="status-label">Alpaca</div>
+                    <div class="status-value" id="alpaca-env">Loading…</div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">Account</div>
+                    <div class="status-value" id="alpaca-account-number">—</div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">Status</div>
+                    <div class="status-value" id="alpaca-account-status">—</div>
+                </div>
+                <div class="status-row">
+                    <div class="status-label">Note</div>
+                    <div class="status-value" id="alpaca-account-note">—</div>
+                </div>
+            </div>
         </div>
         
         <div class="jobs-container">
@@ -272,6 +385,7 @@
             
             <div id="jobs-list">
                 {% for job in jobs %}
+                {% set run = job_runs.get(job.name) if job_runs else None %}
                 <div class="job-card" data-job-name="{{ job.name }}">
                     <div class="job-header">
                         <div class="job-name">{{ job.name }}</div>
@@ -295,6 +409,50 @@
                             <span class="detail-value">{{ "%02d" % job.schedule.hour }}:{{ "%02d" % job.schedule.minute }}</span>
                         </div>
                     </div>
+
+                    <div class="status-panel" style="margin-top: 10px;">
+                        <div class="status-row">
+                            <div class="status-label">Last run</div>
+                            <div class="status-value last-run-at" data-job="{{ job.name }}">
+                                {% if run and run.finished_at %}
+                                    {{ run.finished_at }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-label">Status</div>
+                            <div class="status-value">
+                                {% if run and run.status %}
+                                    <span class="status-pill pill-{{ run.status }} last-run-status" data-job="{{ job.name }}">{{ run.status }}</span>
+                                {% else %}
+                                    <span class="status-pill pill-never last-run-status" data-job="{{ job.name }}">never</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-label">Message</div>
+                            <div class="status-value last-run-message" data-job="{{ job.name }}">
+                                {% if run and run.message %}
+                                    {{ run.message }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="status-row">
+                            <div class="status-label">Result</div>
+                        </div>
+                        <div class="status-result last-run-result" data-job="{{ job.name }}">
+                            {% if run and run.result %}
+                                {{ run.result | tojson }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+                    </div>
+
                     <div class="job-actions">
                         <button class="btn btn-edit" onclick="editJob('{{ job.name }}')">Edit</button>
                         <button class="btn btn-danger" onclick="deleteJob('{{ job.name }}')">Delete</button>
@@ -366,6 +524,76 @@
     
     <script>
         let editingJobName = null;
+
+        function pillClassForStatus(status) {
+            if (status === 'success') return 'pill-success';
+            if (status === 'error') return 'pill-error';
+            if (status === 'running') return 'pill-running';
+            return 'pill-never';
+        }
+
+        function setPill(el, status) {
+            const classes = ['pill-success', 'pill-error', 'pill-running', 'pill-never'];
+            classes.forEach(c => el.classList.remove(c));
+            el.classList.add('status-pill');
+            el.classList.add(pillClassForStatus(status));
+            el.textContent = status || 'never';
+        }
+
+        async function refreshJobRuns() {
+            try {
+                const res = await fetch('/api/job-runs');
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const jobs = (data && data.jobs) ? data.jobs : {};
+                for (const [jobName, run] of Object.entries(jobs)) {
+                    const at = document.querySelector(`.last-run-at[data-job="${jobName}"]`);
+                    const status = document.querySelector(`.last-run-status[data-job="${jobName}"]`);
+                    const msg = document.querySelector(`.last-run-message[data-job="${jobName}"]`);
+                    const result = document.querySelector(`.last-run-result[data-job="${jobName}"]`);
+
+                    if (at) at.textContent = (run && run.finished_at) ? run.finished_at : 'Never';
+                    if (status) setPill(status, run && run.status ? run.status : 'never');
+                    if (msg) msg.textContent = (run && run.message) ? run.message : '—';
+                    if (result) result.textContent = (run && run.result) ? JSON.stringify(run.result, null, 2) : '—';
+                }
+
+                const overallAt = document.getElementById('overall-last-run');
+                const overallMsg = document.getElementById('overall-message');
+                const overallStatusPill = document.querySelector('#overall-status .status-pill');
+                const overall = data ? data.last_run_overall : null;
+
+                if (overallAt) overallAt.textContent = (overall && overall.finished_at) ? overall.finished_at : 'Never';
+                if (overallMsg) overallMsg.textContent = (overall && overall.message) ? overall.message : '—';
+                if (overallStatusPill) setPill(overallStatusPill, overall && overall.status ? overall.status : 'never');
+            } catch (e) {
+                // ignore transient refresh errors
+            }
+        }
+
+        async function refreshAlpacaAccount() {
+            try {
+                const res = await fetch('/api/alpaca-account');
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const envEl = document.getElementById('alpaca-env');
+
+                const isPaper = !!(data && data.paper);
+                if (envEl) envEl.textContent = `${isPaper ? 'PAPER' : 'LIVE'} (${data.base_trading_url || 'unknown'})`;
+                if (acctEl) acctEl.textContent = data.account_number || data.account_id || '—';
+                if (statusEl) statusEl.textContent = data.status || (data.error ? 'error' : '—');
+                if (noteEl) noteEl.textContent = data.note || (data.error ? data.error : '—');
+            } catch (e) {
+                // ignore transient refresh errors
+            }
+        }
+
+        // Poll for updates so UI reflects latest run without reload.
+        setInterval(refreshJobRuns, 5000);
+        refreshAlpacaAccount();
+        setInterval(refreshAlpacaAccount, 60000);
         
         function showAlert(message, type = 'success') {
             const container = document.getElementById('alert-container');
